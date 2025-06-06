@@ -427,16 +427,66 @@ export const BottomPlayer = ({
   setIsPlaying 
 }) => {
   const [volume, setVolume] = useState(50);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   const onReady = (event) => {
+    console.log('YouTube player ready:', event.target);
     setYoutubePlayer(event.target);
+    setDuration(event.target.getDuration());
   };
 
   const onStateChange = (event) => {
+    console.log('Player state changed:', event.data);
     if (event.data === 1) { // Playing
       setIsPlaying(true);
     } else if (event.data === 2) { // Paused
       setIsPlaying(false);
+    } else if (event.data === 0) { // Ended
+      setIsPlaying(false);
+    }
+  };
+
+  const onError = (event) => {
+    console.error('YouTube player error:', event.data);
+    setIsPlaying(false);
+  };
+
+  // Update current time periodically
+  React.useEffect(() => {
+    let interval;
+    if (isPlaying && youtubePlayer) {
+      interval = setInterval(() => {
+        if (youtubePlayer.getCurrentTime) {
+          setCurrentTime(youtubePlayer.getCurrentTime());
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, youtubePlayer]);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleVolumeChange = (e) => {
+    const newVolume = parseInt(e.target.value);
+    setVolume(newVolume);
+    if (youtubePlayer && youtubePlayer.setVolume) {
+      youtubePlayer.setVolume(newVolume);
+    }
+  };
+
+  const handleProgressClick = (e) => {
+    if (youtubePlayer && duration > 0) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      const newTime = (clickX / width) * duration;
+      youtubePlayer.seekTo(newTime);
+      setCurrentTime(newTime);
     }
   };
 
@@ -449,6 +499,8 @@ export const BottomPlayer = ({
       disablekb: 1,
       fs: 0,
       modestbranding: 1,
+      rel: 0,
+      showinfo: 0,
     },
   };
 
@@ -468,7 +520,7 @@ export const BottomPlayer = ({
                 <p className="text-white font-medium truncate">{currentTrack.title}</p>
                 <p className="text-gray-400 text-sm truncate">{currentTrack.artist}</p>
               </div>
-              <Heart className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer" />
+              <Heart className="w-5 h-5 text-gray-400 hover:text-green-500 cursor-pointer transition-colors" />
             </>
           ) : (
             <div className="w-14 h-14 bg-gray-800 rounded flex items-center justify-center">
@@ -480,11 +532,12 @@ export const BottomPlayer = ({
         {/* Player Controls */}
         <div className="flex flex-col items-center space-y-2 flex-1">
           <div className="flex items-center space-x-4">
-            <Shuffle className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer" />
-            <SkipBack className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer" />
+            <Shuffle className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            <SkipBack className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
             <button 
-              className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform"
+              className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform disabled:opacity-50"
               onClick={togglePlayPause}
+              disabled={!currentTrack}
             >
               {isPlaying ? (
                 <Pause className="w-4 h-4 text-black" fill="black" />
@@ -492,26 +545,46 @@ export const BottomPlayer = ({
                 <Play className="w-4 h-4 text-black ml-0.5" fill="black" />
               )}
             </button>
-            <SkipForward className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer" />
-            <Repeat className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer" />
+            <SkipForward className="w-5 h-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            <Repeat className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer transition-colors" />
           </div>
           
           {/* Progress Bar */}
           <div className="flex items-center space-x-2 w-full max-w-md">
-            <span className="text-xs text-gray-400">0:00</span>
-            <div className="flex-1 bg-gray-600 rounded-full h-1">
-              <div className="bg-white h-1 rounded-full" style={{ width: '30%' }}></div>
+            <span className="text-xs text-gray-400 w-10 text-right">
+              {formatTime(currentTime)}
+            </span>
+            <div 
+              className="flex-1 bg-gray-600 rounded-full h-1 cursor-pointer"
+              onClick={handleProgressClick}
+            >
+              <div 
+                className="bg-white h-1 rounded-full transition-all duration-100 relative group"
+                style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
+              >
+                <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </div>
             </div>
-            <span className="text-xs text-gray-400">3:45</span>
+            <span className="text-xs text-gray-400 w-10">
+              {formatTime(duration)}
+            </span>
           </div>
         </div>
 
         {/* Volume Controls */}
         <div className="flex items-center space-x-3 flex-1 justify-end">
           <Volume2 className="w-5 h-5 text-gray-400" />
-          <div className="w-24 bg-gray-600 rounded-full h-1">
+          <div className="w-24 bg-gray-600 rounded-full h-1 relative">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={handleVolumeChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
             <div 
-              className="bg-white h-1 rounded-full" 
+              className="bg-white h-1 rounded-full transition-all duration-100"
               style={{ width: `${volume}%` }}
             ></div>
           </div>
@@ -520,13 +593,24 @@ export const BottomPlayer = ({
 
       {/* Hidden YouTube Player */}
       {currentTrack && (
-        <YouTube
-          videoId={currentTrack.id}
-          opts={opts}
-          onReady={onReady}
-          onStateChange={onStateChange}
-          className="hidden"
-        />
+        <div className="hidden">
+          <YouTube
+            videoId={currentTrack.id}
+            opts={opts}
+            onReady={onReady}
+            onStateChange={onStateChange}
+            onError={onError}
+          />
+        </div>
+      )}
+
+      {/* Playing Now Indicator */}
+      {currentTrack && (
+        <div className="text-center mt-2">
+          <p className="text-xs text-gray-500">
+            {isPlaying ? 'Now Playing' : 'Paused'} • YouTube Music
+          </p>
+        </div>
       )}
     </div>
   );
