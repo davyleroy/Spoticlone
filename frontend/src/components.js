@@ -320,10 +320,68 @@ const LibraryPage = ({ playTrack }) => {
 // Liked Songs Page Component
 const LikedSongsPage = ({ playTrack }) => {
   const likedSongs = [
-    { id: '1', title: 'Blinding Lights', artist: 'The Weeknd', album: 'After Hours', duration: '3:20', image: 'https://images.unsplash.com/photo-1602848597941-0d3d3a2c1241' },
-    { id: '2', title: 'Watermelon Sugar', artist: 'Harry Styles', album: 'Fine Line', duration: '2:54', image: 'https://images.unsplash.com/photo-1590310051055-1079d8f48c89' },
-    { id: '3', title: 'Levitating', artist: 'Dua Lipa', album: 'Future Nostalgia', duration: '3:23', image: 'https://images.unsplash.com/photo-1516223725307-6f76b9ec8742' }
+    { 
+      id: 'dQw4w9WgXcQ', 
+      title: 'Never Gonna Give You Up', 
+      artist: 'Rick Astley', 
+      album: 'Whenever You Need Somebody', 
+      duration: '3:33', 
+      image: 'https://images.unsplash.com/photo-1602848597941-0d3d3a2c1241',
+      thumbnail: 'https://images.unsplash.com/photo-1602848597941-0d3d3a2c1241'
+    },
+    { 
+      id: 'kJQP7kiw5Fk', 
+      title: 'Despacito', 
+      artist: 'Luis Fonsi ft. Daddy Yankee', 
+      album: 'Vida', 
+      duration: '3:47', 
+      image: 'https://images.unsplash.com/photo-1590310051055-1079d8f48c89',
+      thumbnail: 'https://images.unsplash.com/photo-1590310051055-1079d8f48c89'
+    },
+    { 
+      id: 'fJ9rUzIMcZQ', 
+      title: 'Bohemian Rhapsody', 
+      artist: 'Queen', 
+      album: 'A Night at the Opera', 
+      duration: '5:55', 
+      image: 'https://images.unsplash.com/photo-1516223725307-6f76b9ec8742',
+      thumbnail: 'https://images.unsplash.com/photo-1516223725307-6f76b9ec8742'
+    },
+    { 
+      id: 'hT_nvWreIhg', 
+      title: 'Shape of You', 
+      artist: 'Ed Sheeran', 
+      album: '÷ (Divide)', 
+      duration: '3:53', 
+      image: 'https://images.unsplash.com/photo-1444623151656-030273ddb785',
+      thumbnail: 'https://images.unsplash.com/photo-1444623151656-030273ddb785'
+    },
+    { 
+      id: '9bZkp7q19f0', 
+      title: 'Gangnam Style', 
+      artist: 'PSY', 
+      album: 'Psy 6 (Six Rules), Part 1', 
+      duration: '3:39', 
+      image: 'https://images.pexels.com/photos/8108531/pexels-photo-8108531.jpeg',
+      thumbnail: 'https://images.pexels.com/photos/8108531/pexels-photo-8108531.jpeg'
+    },
+    { 
+      id: 'YQHsXMglC9A', 
+      title: 'Hello', 
+      artist: 'Adele', 
+      album: '25', 
+      duration: '4:55', 
+      image: 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf',
+      thumbnail: 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf'
+    }
   ];
+
+  const handlePlayAllClick = () => {
+    if (likedSongs.length > 0) {
+      console.log('Playing all liked songs, starting with:', likedSongs[0]);
+      playTrack(likedSongs[0]);
+    }
+  };
 
   return (
     <div className="p-8">
@@ -335,17 +393,20 @@ const LikedSongsPage = ({ playTrack }) => {
         <div>
           <p className="text-sm font-medium text-white mb-2">PLAYLIST</p>
           <h1 className="text-6xl font-bold text-white mb-6">Liked Songs</h1>
-          <p className="text-gray-300">342 songs</p>
+          <p className="text-gray-300">{likedSongs.length} songs</p>
         </div>
       </div>
 
       {/* Controls */}
       <div className="flex items-center space-x-8 mb-8">
-        <div className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 transition-transform">
+        <div 
+          className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+          onClick={handlePlayAllClick}
+        >
           <Play className="w-6 h-6 text-black ml-1" fill="black" />
         </div>
         <Heart className="w-8 h-8 text-green-500 cursor-pointer" fill="currentColor" />
-        <MoreHorizontal className="w-8 h-8 text-gray-400 cursor-pointer" />
+        <MoreHorizontal className="w-8 h-8 text-gray-400 cursor-pointer hover:text-white transition-colors" />
       </div>
 
       {/* Song List Header */}
@@ -364,17 +425,22 @@ const LikedSongsPage = ({ playTrack }) => {
         {likedSongs.map((song, index) => (
           <div 
             key={song.id}
-            className="grid grid-cols-12 gap-4 px-4 py-2 rounded hover:bg-gray-800 cursor-pointer group"
-            onClick={() => playTrack(song)}
+            className="grid grid-cols-12 gap-4 px-4 py-2 rounded hover:bg-gray-800 cursor-pointer group transition-all duration-200"
+            onClick={() => {
+              console.log('Playing liked song:', song);
+              playTrack(song);
+            }}
           >
             <div className="col-span-1 flex items-center">
               <span className="text-gray-400 group-hover:hidden">{index + 1}</span>
-              <Play className="w-4 h-4 text-white hidden group-hover:block" fill="white" />
+              <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center hidden group-hover:flex">
+                <Play className="w-2.5 h-2.5 text-black ml-0.5" fill="black" />
+              </div>
             </div>
             <div className="col-span-5 flex items-center space-x-3">
               <img src={song.image} alt={song.title} className="w-10 h-10 rounded object-cover" />
               <div>
-                <p className="text-white font-medium">{song.title}</p>
+                <p className="text-white font-medium group-hover:text-green-500 transition-colors">{song.title}</p>
                 <p className="text-gray-400 text-sm">{song.artist}</p>
               </div>
             </div>
@@ -382,13 +448,22 @@ const LikedSongsPage = ({ playTrack }) => {
               <span className="text-gray-400 text-sm">{song.album}</span>
             </div>
             <div className="col-span-2 flex items-center">
-              <span className="text-gray-400 text-sm">2 days ago</span>
+              <span className="text-gray-400 text-sm">{Math.floor(Math.random() * 7) + 1} days ago</span>
             </div>
             <div className="col-span-1 flex items-center justify-center">
               <span className="text-gray-400 text-sm">{song.duration}</span>
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Quick Play Section */}
+      <div className="mt-8 p-4 bg-gray-800 bg-opacity-50 rounded-lg">
+        <h3 className="text-white font-semibold mb-2">🎵 Quick Play</h3>
+        <p className="text-gray-400 text-sm">
+          Click on any song above to start playing real music from YouTube! 
+          The player controls are fully functional with play/pause, volume, and progress tracking.
+        </p>
       </div>
     </div>
   );
