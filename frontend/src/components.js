@@ -162,6 +162,11 @@ const SearchPage = ({ searchResults, searchQuery, setSearchQuery, searchMusic, p
     { name: 'Charts', color: 'bg-indigo-500', image: 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf' }
   ];
 
+  const handleCategoryClick = async (categoryName) => {
+    setSearchQuery(categoryName.toLowerCase());
+    await searchMusic(categoryName.toLowerCase());
+  };
+
   return (
     <div className="p-8">
       {/* Search Bar */}
@@ -194,12 +199,18 @@ const SearchPage = ({ searchResults, searchQuery, setSearchQuery, searchMusic, p
               <div 
                 key={track.id}
                 className="flex items-center space-x-3 p-2 rounded hover:bg-gray-800 cursor-pointer group"
-                onClick={() => playTrack(track)}
+                onClick={() => {
+                  console.log('Playing track:', track);
+                  playTrack(track);
+                }}
               >
-                <span className="text-gray-400 w-6 text-sm">{index + 1}</span>
+                <span className="text-gray-400 w-6 text-sm group-hover:hidden">{index + 1}</span>
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <Play className="w-3 h-3 text-black ml-0.5" fill="black" />
+                </div>
                 <img src={track.thumbnail} alt={track.title} className="w-10 h-10 rounded object-cover" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-white truncate">{track.title}</p>
+                  <p className="text-white truncate font-medium">{track.title}</p>
                   <p className="text-gray-400 text-sm truncate">{track.artist}</p>
                 </div>
                 <span className="text-gray-400 text-sm">{track.duration}</span>
@@ -219,6 +230,7 @@ const SearchPage = ({ searchResults, searchQuery, setSearchQuery, searchMusic, p
               <div 
                 key={category.name}
                 className={`${category.color} rounded-lg p-4 relative overflow-hidden cursor-pointer hover:scale-105 transition-transform h-32`}
+                onClick={() => handleCategoryClick(category.name)}
               >
                 <h3 className="text-xl font-bold text-white mb-2">{category.name}</h3>
                 <img 
