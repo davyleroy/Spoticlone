@@ -20,6 +20,11 @@ const SpotifyApp = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [likedSongs, setLikedSongs] = useState([]);
+  const [userPlaylists, setUserPlaylists] = useState([]);
+  const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
+  const [showAddToPlaylist, setShowAddToPlaylist] = useState(null);
 
   // Mock user playlists
   const userPlaylists = [
