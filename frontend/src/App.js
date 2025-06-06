@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home, Search, Library, CreatePlaylist, Home as HomeIcon, Music, Plus, Heart, Clock, MoreHorizontal, Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, ChevronLeft, ChevronRight } from 'lucide-react';
 import YouTube from 'react-youtube';
 import axios from 'axios';
+import { MainContent, BottomPlayer } from './components';
 
 // YouTube API Configuration
 const YOUTUBE_API_KEY = 'AIzaSyDi8P4rR0bhUoAhY5jh-zFnIUyBVTPgzEM';
@@ -239,4 +240,14 @@ const NavItem = ({ icon: Icon, label, active, onClick }) => {
   );
 };
 
-export default SpotifyApp;
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="*" element={<SpotifyApp />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
