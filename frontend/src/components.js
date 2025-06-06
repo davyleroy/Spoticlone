@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, MoreHorizontal, Clock, Heart, Plus } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, MoreHorizontal, Clock, Heart, Plus, Music } from 'lucide-react';
 import YouTube from 'react-youtube';
 
 // Main Content Component
