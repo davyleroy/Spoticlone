@@ -62,6 +62,23 @@ const HomePage = ({ playlists, playTrack, setSelectedPlaylist }) => {
     { name: 'Electronic', image: 'https://images.unsplash.com/photo-1485192686578-0a70d91accd6', color: 'bg-yellow-500' }
   ];
 
+  // Sample songs for quick play testing
+  const quickPlaySongs = [
+    { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', artist: 'Rick Astley', thumbnail: 'https://images.unsplash.com/photo-1602848597941-0d3d3a2c1241', duration: '3:33' },
+    { id: 'kJQP7kiw5Fk', title: 'Despacito', artist: 'Luis Fonsi ft. Daddy Yankee', thumbnail: 'https://images.unsplash.com/photo-1590310051055-1079d8f48c89', duration: '3:47' },
+    { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', artist: 'Queen', thumbnail: 'https://images.unsplash.com/photo-1444623151656-030273ddb785', duration: '5:55' },
+    { id: 'hT_nvWreIhg', title: 'Shape of You', artist: 'Ed Sheeran', thumbnail: 'https://images.unsplash.com/photo-1516223725307-6f76b9ec8742', duration: '3:53' },
+    { id: '9bZkp7q19f0', title: 'Gangnam Style', artist: 'PSY', thumbnail: 'https://images.pexels.com/photos/8108531/pexels-photo-8108531.jpeg', duration: '3:39' },
+    { id: 'YQHsXMglC9A', title: 'Hello', artist: 'Adele', thumbnail: 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf', duration: '4:55' }
+  ];
+
+  const handleRecentlyPlayedClick = (item, index) => {
+    // Play a sample song when clicking on recently played items
+    const song = quickPlaySongs[index % quickPlaySongs.length];
+    console.log('Playing from recently played:', song);
+    playTrack(song);
+  };
+
   return (
     <div className="p-8">
       {/* Header */}
@@ -72,15 +89,16 @@ const HomePage = ({ playlists, playTrack, setSelectedPlaylist }) => {
       {/* Recently Played */}
       <section className="mb-8">
         <div className="grid grid-cols-3 gap-4">
-          {recentlyPlayed.map(item => (
+          {recentlyPlayed.map((item, index) => (
             <div 
               key={item.id}
               className="bg-gray-800 bg-opacity-50 rounded-md flex items-center hover:bg-gray-700 cursor-pointer group transition-all duration-300"
+              onClick={() => handleRecentlyPlayedClick(item, index)}
             >
               <img src={item.image} alt={item.title} className="w-16 h-16 rounded-l-md object-cover" />
               <span className="px-4 font-medium text-sm">{item.title}</span>
               <div className="ml-auto mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center hover:scale-105 transition-transform">
                   <Play className="w-5 h-5 text-black ml-0.5" fill="black" />
                 </div>
               </div>
@@ -96,11 +114,17 @@ const HomePage = ({ playlists, playTrack, setSelectedPlaylist }) => {
           <button className="text-gray-400 hover:text-white text-sm font-medium">Show all</button>
         </div>
         <div className="grid grid-cols-6 gap-4">
-          {playlists.slice(0, 6).map(playlist => (
+          {playlists.slice(0, 6).map((playlist, index) => (
             <PlaylistCard 
               key={playlist.id}
               playlist={playlist}
-              onClick={() => setSelectedPlaylist(playlist)}
+              onClick={() => {
+                console.log('Clicked playlist:', playlist);
+                setSelectedPlaylist(playlist);
+                // Also play a sample song immediately
+                const song = quickPlaySongs[index % quickPlaySongs.length];
+                playTrack(song);
+              }}
             />
           ))}
         </div>
@@ -113,11 +137,17 @@ const HomePage = ({ playlists, playTrack, setSelectedPlaylist }) => {
           <button className="text-gray-400 hover:text-white text-sm font-medium">Show all</button>
         </div>
         <div className="grid grid-cols-6 gap-4">
-          {playlists.slice(6, 12).map(playlist => (
+          {playlists.slice(6, 12).map((playlist, index) => (
             <PlaylistCard 
               key={playlist.id}
               playlist={playlist}
-              onClick={() => setSelectedPlaylist(playlist)}
+              onClick={() => {
+                console.log('Clicked recently played:', playlist);
+                setSelectedPlaylist(playlist);
+                // Play a different song for recently played
+                const song = quickPlaySongs[(index + 3) % quickPlaySongs.length];
+                playTrack(song);
+              }}
             />
           ))}
         </div>
@@ -129,11 +159,17 @@ const HomePage = ({ playlists, playTrack, setSelectedPlaylist }) => {
           <h2 className="text-2xl font-bold">Browse all</h2>
         </div>
         <div className="grid grid-cols-6 gap-4">
-          {categories.map(category => (
+          {categories.map((category, index) => (
             <div 
               key={category.name}
               className={`${category.color} rounded-lg p-4 relative overflow-hidden cursor-pointer hover:scale-105 transition-transform`}
               style={{ aspectRatio: '1' }}
+              onClick={() => {
+                console.log('Clicked category:', category.name);
+                // Play a song based on category
+                const song = quickPlaySongs[index % quickPlaySongs.length];
+                playTrack(song);
+              }}
             >
               <h3 className="text-xl font-bold text-white mb-2">{category.name}</h3>
               <img 
